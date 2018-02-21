@@ -1,9 +1,12 @@
-package com.example.ryan.mobilegamesassignmentgalaga;
+package com.example.ryan.mobilegamesassignmentgalaga.View;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+
+import com.example.ryan.mobilegamesassignmentgalaga.R;
+import com.example.ryan.mobilegamesassignmentgalaga.View.MainActivity;
 
 public class HighScoreActivity extends AppCompatActivity {
 

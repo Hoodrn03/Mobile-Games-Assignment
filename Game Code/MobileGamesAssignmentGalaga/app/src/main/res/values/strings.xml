@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">Galaga</string>
 
+    <string name="highScore">HighScores</string>
+
+    <string name="lives">Lives : </string>
 
 </resources>

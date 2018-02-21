@@ -4,20 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.ryan.mobilegamesassignmentgalaga.HighScoreActivity">
+    tools:context="com.example.ryan.mobilegamesassignmentgalaga.View.HighScoreActivity">
 
     <!-- Title -->
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="224dp"
-        android:layout_height="59dp"
+        android:layout_width="350dp"
+        android:layout_height="80dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="High Scores"
-        android:textSize="40dp"
+        android:text="@string/highScore"
+        android:textAlignment="center"
+        android:textSize="40sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,23 +26,5 @@
         app:layout_constraintVertical_bias="0.018" />
 
     <!-- Back Button -->
-
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="75dp"
-        android:layout_height="50dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:onClick="backToMenu"
-        android:text="back
-"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.025"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.943" />
 
 </android.support.constraint.ConstraintLayout>
