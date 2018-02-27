@@ -3,109 +3,53 @@ package com.example.ryan.mobilegamesassignmentgalaga.Model;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Point;
-import android.graphics.Paint;
-import android.os.Process;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 
 /**
- * Created by Ryan on 21/02/2018.
+ * Created by Ryan on 24/02/2018.
  */
 
-public class GameView extends SurfaceView implements Runnable{
+// This will be used to hold the game's canvas which everything will be drawn onto.
+
+public class GameView {
 
     // Constructor
 
-    public GameView(Context context, Point screenS)
+    public GameView(Point screenS)
     {
-        super(context);
-
-        holder = getHolder();
-
         screenSize = screenS;
-
     }
 
     // Data Members
 
-    Point screenSize;
+    private Point screenSize;
 
-    SurfaceHolder holder;
-
-    private boolean ok = false;
-
-    Thread t = null;
-
-    Paint paint = new Paint();
+    Canvas gameCanvas;
 
     // Member Functions
 
-    private void m_UpdateCanvas()
+    // This will be used to lock the game canvas.
+    public void lockCanvas(SurfaceHolder holder)
     {
-
+        gameCanvas = holder.lockCanvas();
     }
 
-    protected void  m_DrawCanvas(Canvas canvas)
+    // This will unlock the game canvas.
+    public void unlockCanvas(SurfaceHolder holder)
     {
-        canvas.drawARGB(0, 0, 0, 0);
-
-
+        holder.unlockCanvasAndPost(gameCanvas);
     }
 
-    public void run()
+    // This will be used to draw the game's canvas.
+    public void drawCanvas()
     {
-        android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-
-        while (ok)
-        {
-            if(!holder.getSurface().isValid())
-            {
-                continue;
-            }
-
-            Canvas canvas = holder.lockCanvas();
-
-            this.m_UpdateCanvas();;
-
-            this.draw(canvas);
-
-            holder.unlockCanvasAndPost(canvas);
-        }
+        gameCanvas.drawARGB(255, 100, 100, 0);
     }
 
-    public void m_Pause()
+    // This will be used to get access to the game's canvas.
+    public Canvas getCanvas()
     {
-        ok = false;
-
-        while(true)
-        {
-            try
-            {
-                t.join();
-            }
-
-            catch (InterruptedException e)
-            {
-                e.printStackTrace();
-            }
-
-            break;
-        }
-
-        t = null;
-
+        return gameCanvas;
     }
-
-    public void m_Resume()
-    {
-        ok = true;
-
-        t = new Thread(this);
-
-        t.start();
-
-    }
-
-
 
 }

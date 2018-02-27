@@ -1,34 +1,34 @@
 package com.example.ryan.mobilegamesassignmentgalaga.Model;
 
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+
 /**
- * Created by Ryan on 21/02/2018.
+ * Created by Ryan on 24/02/2018.
  */
 
-class Player {
+// This will hold all of the items relating to the player. and the player's functionality.
+
+public class Player {
 
     // Constructor
 
-    public Player()
+    Player()
     {
 
     }
 
     // Data Members
 
-    private int iPlayerLives = 3;
-
     // Member Functions
 
-    // This will be used to check the current value of player lives.
-    public int m_iGetPlayerLives()
-    {
-        return iPlayerLives;
-    }
 
-    // This will be used to update the value of player lives. || -1 to lower || +1 to increase ||
-    public void m_SetPlayerLives(int iNewValue)
+    public void drawPlayer(Paint p, Canvas c)
     {
-        iPlayerLives += iNewValue;
+        p.setColor(Color.BLUE);
+
+        c.drawRect(10, 10, 10, 10, p);
     }
 
 }

@@ -1,19 +1,21 @@
 package com.example.ryan.mobilegamesassignmentgalaga.View;
 
 import android.graphics.Point;
+import android.nfc.Tag;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.BoringLayout;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 
+import com.example.ryan.mobilegamesassignmentgalaga.Model.GameLoop;
 import com.example.ryan.mobilegamesassignmentgalaga.Model.GameView;
-import com.example.ryan.mobilegamesassignmentgalaga.R;
+
+import static android.content.ContentValues.TAG;
 
 public class MainGame extends AppCompatActivity {
 
-    private GameView gv;
+    GameLoop gl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +30,7 @@ public class MainGame extends AppCompatActivity {
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
-    //Set the flags on the view
+        //Set the flags on the view
         getWindow().getDecorView().setSystemUiVisibility(mUIFlag);
 
         DisplayMetrics metrics = new DisplayMetrics();
@@ -40,17 +42,21 @@ public class MainGame extends AppCompatActivity {
 
         Point screenSize = new Point(widthPixels, heightPixels);
 
+        gl = new GameLoop(this, screenSize);
 
-        gv = new GameView(this, screenSize);
+        setContentView(gl);
+
 
     }
+
 
     @Override
     protected void onPause()
     {
         super.onPause();
 
-        gv.m_Pause();
+        gl.pause();
+
     }
 
     @Override
@@ -58,7 +64,8 @@ public class MainGame extends AppCompatActivity {
     {
         super.onResume();
 
-        gv.m_Resume();
+        gl.resume();
+
     }
 
 
