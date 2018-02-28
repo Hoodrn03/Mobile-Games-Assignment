@@ -1,17 +1,12 @@
 package com.example.ryan.mobilegamesassignmentgalaga.View;
 
 import android.graphics.Point;
-import android.nfc.Tag;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 
 import com.example.ryan.mobilegamesassignmentgalaga.Model.GameLoop;
-import com.example.ryan.mobilegamesassignmentgalaga.Model.GameView;
-
-import static android.content.ContentValues.TAG;
 
 public class MainGame extends AppCompatActivity {
 

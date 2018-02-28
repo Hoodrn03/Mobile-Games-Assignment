@@ -1,6 +1,7 @@
 package com.example.ryan.mobilegamesassignmentgalaga.Model;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
@@ -8,6 +9,8 @@ import android.os.Process;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
+import com.example.ryan.mobilegamesassignmentgalaga.R;
 
 import static android.content.ContentValues.TAG;
 
@@ -17,7 +20,9 @@ import static android.content.ContentValues.TAG;
 
 public class GameLoop extends SurfaceView implements Runnable{
 
-    // Constructor
+    //------------------------------------------------------------------------
+    // Constructor :
+    //------------------------------------------------------------------------
 
     public GameLoop(Context context, Point screens)
     {
@@ -27,21 +32,49 @@ public class GameLoop extends SurfaceView implements Runnable{
 
         screenSize = screens;
 
+        // Initialise Classes.
+
+        background = new Background();
+
+        player = new Player();
+
+        // Set Bitmap Sizes.
+
+        background.setImageSize(screenSize.x, screenSize.y);
+
+        // Set Bitmaps.
+
+        player.setPlayer(this.getContext());
+
+        background.setBackground(this.getContext());
+
     }
 
-    // Data Members
+    //------------------------------------------------------------------------
+    // Data Members :
+    //------------------------------------------------------------------------
 
     private boolean ok = false;
 
-    Thread t = null;
+    private Thread t = null;
 
-    SurfaceHolder holder;
+    private SurfaceHolder holder;
 
-    Paint paint;
+    private Paint paint;
 
-    Point screenSize;
+    private Point screenSize;
 
-    // Member Functions
+    //------------------------------------------------------------------------
+    // Classes :
+    //------------------------------------------------------------------------
+
+    private Background background;
+
+    private Player player;
+
+    //------------------------------------------------------------------------
+    // Member Functions :
+    //------------------------------------------------------------------------
 
     // This wil be used to create a separate thread. This thread will be used for the main game loop.
     public void run()
@@ -88,7 +121,7 @@ public class GameLoop extends SurfaceView implements Runnable{
 
         t = null;
 
-        Log.d(TAG, "pause: Game paused.");
+        Log.e(TAG, "pause: Game paused.");
     }
 
     // This will be used to resume the game.
@@ -100,19 +133,28 @@ public class GameLoop extends SurfaceView implements Runnable{
 
         t.start();
 
-        Log.d(TAG, "resume: Game Resumed");
+        Log.e(TAG, "resume: Game Resumed");
     }
 
-    // This is where everything in the game will be drawn.
+
     protected void updateCanvas()
     {
+        // Update Game Objects.
 
+        player.updatePlayer();
     }
 
     // This will handle the drawing of the canvas.
     protected void drawCanvas(Canvas gameCanvas)
     {
         gameCanvas.drawARGB(255, 0, 0, 0);
+
+        // Draw Items to the canvas.
+
+        background.drawBackground(gameCanvas);
+
+        player.drawPlayer(gameCanvas);
+
 
     }
 }
