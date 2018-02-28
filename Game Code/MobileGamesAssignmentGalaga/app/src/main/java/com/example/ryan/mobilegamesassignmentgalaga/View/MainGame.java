@@ -1,12 +1,17 @@
 package com.example.ryan.mobilegamesassignmentgalaga.View;
 
+import android.content.pm.ActivityInfo;
 import android.graphics.Point;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.example.ryan.mobilegamesassignmentgalaga.Model.GameLoop;
+
+import static android.content.ContentValues.TAG;
 
 public class MainGame extends AppCompatActivity {
 
@@ -36,6 +41,8 @@ public class MainGame extends AppCompatActivity {
         int widthPixels = metrics.widthPixels;
 
         Point screenSize = new Point(widthPixels, heightPixels);
+
+        super.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         gl = new GameLoop(this, screenSize);
 

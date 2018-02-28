@@ -1,5 +1,7 @@
 package com.example.ryan.mobilegamesassignmentgalaga.Model;
 
+import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -35,14 +37,20 @@ public class Player {
     // Data Members :
     //------------------------------------------------------------------------
 
-    // This will be the
+    // This will be the player's base sprite.
     private Bitmap player;
+
+    // This will be the player's edited sprite for drawing.
+    private Bitmap playerToDraw;
 
     // These will hold the sprite's x and y coordinates.
     private int playerPosX, playerPosY;
 
     // This will hold the player's height and width for each sprite.
     private int playerHeight, playerWidth;
+
+    // This will be used to determine how quickly the player moves along the screen.
+    private int playerSpeed = 25;
 
     // This will hold the sprite which is taken from the sprite sheet.
     private Rect sourceRect;
@@ -73,30 +81,29 @@ public class Player {
         sourceRect.top = rowCounter * playerHeight;
         sourceRect.bottom = sourceRect.top + playerHeight;
 
+        // Log.d(TAG, "Left : " + sourceRect.left + " Right : " + sourceRect.right + " Top : " + sourceRect.top + " Bottom : " + sourceRect.bottom);
+
+
+
     }
 
     // This will be used to keep track of which item on the sprite sheet to draw.
     public void frameToDraw()
     {
-        if(columnCounter == column)
+
+        if(rowCounter >= row)
         {
-            columnCounter = 0;
-        }
-        else
-        {
+            rowCounter = 0;
+
             columnCounter++;
         }
 
-        if(rowCounter == row)
+        if(columnCounter >= column)
         {
-            rowCounter = 0;
-        }
-        else
-        {
-            rowCounter++;
+            columnCounter = 0;
         }
 
-        Log.d(TAG, "Current Frame for player : " + columnCounter + " " + rowCounter);
+        rowCounter++;
 
     }
 
@@ -109,11 +116,13 @@ public class Player {
 
         player = BitmapFactory.decodeResource(res, R.drawable.player);
 
+        playerToDraw = Bitmap.createScaledBitmap(player, player.getWidth() * 2, player.getHeight() * 2, false);
+
         // Prepare for separate frames.
 
-        playerHeight = player.getHeight() / row;
+        playerHeight = playerToDraw.getHeight() / row;
 
-        playerWidth = player.getWidth() / column;
+        playerWidth = playerToDraw.getWidth() / column;
 
         sourceRect = new Rect(0, 0, playerWidth, playerHeight);
 
@@ -121,12 +130,32 @@ public class Player {
 
     }
 
+    // This will be used to move the player's sprite within the game world.
+    public void movePlayer(boolean moveLeft)
+    {
+        if(moveLeft)
+        {
+            playerPosX = playerPosX - playerSpeed;
+        }
+
+        else
+        {
+            playerPosX = playerPosX + playerSpeed;
+        }
+
+        playerPosY = 200;
+
+        Log.e(TAG, playerPosX + " " + playerPosY);
+
+        destRect = new Rect(playerPosX, playerPosY, playerPosX + playerWidth, playerPosY + playerHeight);
+    }
+
     // This will be used to draw the player.
     public void drawPlayer(Canvas canvas)
     {
-        if(player != null)
+        if(playerToDraw != null)
         {
-            canvas.drawBitmap(player, playerPosX, playerPosY, null);
+            canvas.drawBitmap(playerToDraw, sourceRect, destRect, null);
         }
         else
         {
