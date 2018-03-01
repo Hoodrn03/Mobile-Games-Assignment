@@ -38,7 +38,7 @@ public class GameLoop extends SurfaceView implements Runnable{
 
         background = new Background();
 
-        player = new Player();
+        player = new Player(screenSize.y - (screenSize.y / 4));
 
         leftButton = new InputButton();
         rightButton = new InputButton();
@@ -54,10 +54,16 @@ public class GameLoop extends SurfaceView implements Runnable{
 
 
         paint.setColor(Color.RED);
+        paint.setStrokeWidth(10);
         paint2.setColor(Color.CYAN);
+        paint2.setStrokeWidth(10);
 
         leftButton.setZoneBounds(0, screenSize.y - (screenSize.y / 8), screenSize.x / 2, screenSize.y, paint);
         rightButton.setZoneBounds(screenSize.x / 2, screenSize.y - (screenSize.y / 8), screenSize.x, screenSize.y, paint2);
+
+        // Initialise Player.
+
+        player.setbounds(0, screenSize.x);
 
         // Set Bitmaps.
 

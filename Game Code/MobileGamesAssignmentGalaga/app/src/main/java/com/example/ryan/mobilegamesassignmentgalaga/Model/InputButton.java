@@ -47,7 +47,7 @@ public class InputButton {
         {
             if(pressedX > inputZone.right && pressedY > inputZone.bottom)
             {
-                Log.e(TAG, "Within Zone");
+                // Log.e(TAG, "Within Zone");
 
                 return true;
             }
@@ -65,7 +65,7 @@ public class InputButton {
         buttonWidth = newWidth;
         buttonHeight = newHeight;
 
-        Log.e(TAG, buttonPosX + "  " + buttonPosY);
+        // Log.e(TAG, buttonPosX + "  " + buttonPosY);
 
         inputZone = new Rect(buttonWidth, buttonHeight, buttonPosX, buttonPosY);
 

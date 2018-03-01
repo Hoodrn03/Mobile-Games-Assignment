@@ -28,9 +28,9 @@ public class Player {
     // Constructor :
     //------------------------------------------------------------------------
 
-    Player()
+    Player(int newYPos)
     {
-
+        iPlayerPosY = newYPos;
     }
 
     //------------------------------------------------------------------------
@@ -44,13 +44,13 @@ public class Player {
     private Bitmap playerToDraw;
 
     // These will hold the sprite's x and y coordinates.
-    private int playerPosX, playerPosY;
+    private int iPlayerPosX,iPlayerPosY;
 
     // This will hold the player's height and width for each sprite.
-    private int playerHeight, playerWidth;
+    private int iPlayerHeight, iPlayerWidth;
 
     // This will be used to determine how quickly the player moves along the screen.
-    private int playerSpeed = 25;
+    private int iPlayerSpeed = 25;
 
     // This will hold the sprite which is taken from the sprite sheet.
     private Rect sourceRect;
@@ -59,12 +59,16 @@ public class Player {
     private Rect destRect;
 
     // This will hold the position on the sprite sheet for the item to be drawn.
-    private int row = 3;
-    private int column = 2;
+    private int iRow = 3;
+    private int iColumn = 2;
 
     // This will hold the current position on the sprite sheet.
-    private int rowCounter = 0;
-    private int columnCounter = 0;
+    private int iRowCounter = 0;
+    private int iColumnCounter = 0;
+
+    // These will be used to constrain the player to the device screen.
+    private int iLeftBounds, iRightBounds;
+
 
 
     //------------------------------------------------------------------------
@@ -76,10 +80,10 @@ public class Player {
 
         frameToDraw();
 
-        sourceRect.left = columnCounter * playerWidth;
-        sourceRect.right = sourceRect.left + playerWidth;
-        sourceRect.top = rowCounter * playerHeight;
-        sourceRect.bottom = sourceRect.top + playerHeight;
+        sourceRect.left = iColumnCounter * iPlayerWidth;
+        sourceRect.right = sourceRect.left + iPlayerWidth;
+        sourceRect.top = iRowCounter * iPlayerHeight;
+        sourceRect.bottom = sourceRect.top + iPlayerHeight;
 
         // Log.d(TAG, "Left : " + sourceRect.left + " Right : " + sourceRect.right + " Top : " + sourceRect.top + " Bottom : " + sourceRect.bottom);
 
@@ -87,23 +91,30 @@ public class Player {
 
     }
 
+    public void setbounds(int newLeftBounds, int newRightBounds)
+    {
+        iLeftBounds = newLeftBounds;
+
+        iRightBounds = newRightBounds;
+    }
+
     // This will be used to keep track of which item on the sprite sheet to draw.
     public void frameToDraw()
     {
 
-        if(rowCounter >= row)
+        if(iRowCounter >= iRow)
         {
-            rowCounter = 0;
+            iRowCounter = 0;
 
-            columnCounter++;
+            iColumnCounter++;
         }
 
-        if(columnCounter >= column)
+        if(iColumnCounter >= iColumn)
         {
-            columnCounter = 0;
+            iColumnCounter = 0;
         }
 
-        rowCounter++;
+        iRowCounter++;
 
     }
 
@@ -120,13 +131,13 @@ public class Player {
 
         // Prepare for separate frames.
 
-        playerHeight = playerToDraw.getHeight() / row;
+        iPlayerHeight = playerToDraw.getHeight() / iRow;
 
-        playerWidth = playerToDraw.getWidth() / column;
+        iPlayerWidth = playerToDraw.getWidth() / iColumn;
 
-        sourceRect = new Rect(0, 0, playerWidth, playerHeight);
+        sourceRect = new Rect(0, 0, iPlayerWidth, iPlayerHeight);
 
-        destRect = new Rect(playerPosX, playerPosY, playerPosX + playerWidth, playerPosY + playerHeight);
+        destRect = new Rect(iPlayerPosX, iPlayerPosY, iPlayerPosX + iPlayerWidth, iPlayerPosY + iPlayerHeight);
 
     }
 
@@ -135,19 +146,23 @@ public class Player {
     {
         if(moveLeft)
         {
-            playerPosX = playerPosX - playerSpeed;
+            if(iPlayerPosX > iLeftBounds)
+            {
+                iPlayerPosX = iPlayerPosX - iPlayerSpeed;
+            }
         }
 
         else
         {
-            playerPosX = playerPosX + playerSpeed;
+            if(iPlayerPosX + iPlayerWidth < iRightBounds)
+            {
+                iPlayerPosX = iPlayerPosX + iPlayerSpeed;
+            }
         }
 
-        playerPosY = 200;
+        Log.e(TAG, iPlayerPosX + " " + iPlayerPosY);
 
-        Log.e(TAG, playerPosX + " " + playerPosY);
-
-        destRect = new Rect(playerPosX, playerPosY, playerPosX + playerWidth, playerPosY + playerHeight);
+        destRect = new Rect(iPlayerPosX, iPlayerPosY, iPlayerPosX + iPlayerWidth, iPlayerPosY + iPlayerHeight);
     }
 
     // This will be used to draw the player.
