@@ -50,7 +50,7 @@ public class Player {
     private int iPlayerHeight, iPlayerWidth;
 
     // This will be used to determine how quickly the player moves along the screen.
-    private int iPlayerSpeed = 25;
+    private int iPlayerSpeed = 15;
 
     // This will hold the sprite which is taken from the sprite sheet.
     private Rect sourceRect;
@@ -70,7 +70,6 @@ public class Player {
     private int iLeftBounds, iRightBounds;
 
 
-
     //------------------------------------------------------------------------
     // Member Functions :
     //------------------------------------------------------------------------
@@ -87,11 +86,9 @@ public class Player {
 
         // Log.d(TAG, "Left : " + sourceRect.left + " Right : " + sourceRect.right + " Top : " + sourceRect.top + " Bottom : " + sourceRect.bottom);
 
-
-
     }
 
-    public void setbounds(int newLeftBounds, int newRightBounds)
+    public void setBounds(int newLeftBounds, int newRightBounds)
     {
         iLeftBounds = newLeftBounds;
 

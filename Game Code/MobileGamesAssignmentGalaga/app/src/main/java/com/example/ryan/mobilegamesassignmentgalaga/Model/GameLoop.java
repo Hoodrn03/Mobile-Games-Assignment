@@ -63,7 +63,7 @@ public class GameLoop extends SurfaceView implements Runnable{
 
         // Initialise Player.
 
-        player.setbounds(0, screenSize.x);
+        player.setBounds(0, screenSize.x);
 
         // Set Bitmaps.
 
@@ -83,7 +83,6 @@ public class GameLoop extends SurfaceView implements Runnable{
     private Thread t = null;
 
     private SurfaceHolder holder;
-
 
     // This will be used to hold the current device's screen size.
     private Point screenSize;
@@ -143,16 +142,17 @@ public class GameLoop extends SurfaceView implements Runnable{
 
                 Log.d(TAG, "Pressed...");
 
-                fingerPosX = event.getX();
-                fingerPosY = event.getY();
-
                 Log.e(TAG, fingerPosX + " " + fingerPosY);
 
                 break;
 
             // Moved On Screen.
             case MotionEvent.ACTION_MOVE:
+
                 Log.d(TAG, "Moving!!!");
+
+                fingerPosX = event.getX();
+                fingerPosY = event.getY();
 
                 break;
 

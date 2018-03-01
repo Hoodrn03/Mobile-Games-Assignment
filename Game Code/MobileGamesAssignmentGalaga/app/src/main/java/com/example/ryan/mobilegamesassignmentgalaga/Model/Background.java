@@ -34,8 +34,6 @@ public class Background {
     // Data Members :
     //------------------------------------------------------------------------
 
-    private Bitmap backgroundImg;
-
     private Bitmap scaledBackground;
 
     // This will hold the x and y for the background.
@@ -63,7 +61,7 @@ public class Background {
     {
         Resources res = context.getResources();
 
-        backgroundImg = BitmapFactory.decodeResource(res, R.drawable.space1);
+        Bitmap backgroundImg = BitmapFactory.decodeResource(res, R.drawable.space1);
 
         scaledBackground = Bitmap.createScaledBitmap(backgroundImg, backgroundImg.getWidth(), imageY, false);
 
