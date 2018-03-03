@@ -61,11 +61,11 @@ public class Player {
 
     // This will hold the position on the sprite sheet for the item to be drawn.
     private int iRow = 3;
-    private int iColumn = 3;
+    private int iColumn = 2;
 
     // This will hold the current position on the sprite sheet.
-    private int iRowCounter = 0;
-    private int iColumnCounter = 0;
+    private int iRowCounter = 1;
+    private int iColumnCounter = 1;
 
     // These will be used to constrain the player to the device screen.
     private int iLeftBounds, iRightBounds;
@@ -85,9 +85,9 @@ public class Player {
 
         fUpdateTimer += fDeltaTime;
 
-        Log.e(TAG, "(Update Player) DELTA TIME : " + fDeltaTime + " Current Timer : " + fUpdateTimer);
+        // Log.e(TAG, "(Update Player) DELTA TIME : " + fDeltaTime + " Current Timer : " + fUpdateTimer);
 
-        if(fUpdateTimer >= 500)
+        if(fUpdateTimer >= 200)
         {
             frameToDraw();
 
@@ -117,19 +117,21 @@ public class Player {
     public void frameToDraw()
     {
 
-        if(iRowCounter >= iRow)
+        if(iRowCounter >= (iRow - 1))
         {
             iRowCounter = 0;
 
             iColumnCounter++;
         }
 
-        if(iColumnCounter >= iColumn)
+        if(iColumnCounter >= (iColumn - 1))
         {
             iColumnCounter = 0;
         }
 
         iRowCounter++;
+
+        Log.e(TAG, "Column : " + iColumnCounter + " Row : " + iRowCounter);
 
     }
 
