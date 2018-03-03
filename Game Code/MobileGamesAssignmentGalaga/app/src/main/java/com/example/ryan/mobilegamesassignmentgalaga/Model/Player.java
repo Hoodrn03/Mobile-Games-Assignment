@@ -64,8 +64,8 @@ public class Player {
     private int iColumn = 2;
 
     // This will hold the current position on the sprite sheet.
-    private int iRowCounter = 1;
-    private int iColumnCounter = 1;
+    private int iRowCounter = 0;
+    private int iColumnCounter = 0;
 
     // These will be used to constrain the player to the device screen.
     private int iLeftBounds, iRightBounds;
@@ -76,6 +76,7 @@ public class Player {
     // Member Functions :
     //------------------------------------------------------------------------
 
+    //------------------------------------------------------------------------
     // This will be used to update the player.
     public void updatePlayer() {
 
@@ -106,6 +107,9 @@ public class Player {
 
     }
 
+    //------------------------------------------------------------------------
+    // This will be used to set the leftmost and rightmost bounds for the player constrining them to
+    // the screen.
     public void setBounds(int newLeftBounds, int newRightBounds)
     {
         iLeftBounds = newLeftBounds;
@@ -113,6 +117,7 @@ public class Player {
         iRightBounds = newRightBounds;
     }
 
+    //------------------------------------------------------------------------
     // This will be used to keep track of which item on the sprite sheet to draw.
     public void frameToDraw()
     {
@@ -124,17 +129,18 @@ public class Player {
             iColumnCounter++;
         }
 
-        if(iColumnCounter >= (iColumn - 1))
+        if(iColumnCounter >= iColumn)
         {
             iColumnCounter = 0;
         }
 
         iRowCounter++;
 
-        Log.e(TAG, "Column : " + iColumnCounter + " Row : " + iRowCounter);
+        // Log.e(TAG, "Column : " + iColumnCounter + " Row : " + iRowCounter);
 
     }
 
+    //------------------------------------------------------------------------
     // This will be used to set the player's bitmap.
     public void setPlayer(Context context)
     {
@@ -158,6 +164,7 @@ public class Player {
 
     }
 
+    //------------------------------------------------------------------------
     // This will be used to move the player's sprite within the game world.
     public void movePlayer(boolean moveLeft)
     {
@@ -182,6 +189,7 @@ public class Player {
         destRect = new Rect(iPlayerPosX, iPlayerPosY, iPlayerPosX + iPlayerWidth, iPlayerPosY + iPlayerHeight);
     }
 
+    //------------------------------------------------------------------------
     // This will be used to draw the player.
     public void drawPlayer(Canvas canvas)
     {
@@ -195,11 +203,15 @@ public class Player {
         }
     }
 
+    //------------------------------------------------------------------------
+    // This will be used to get the player's x possition.
     public int getPlayerX()
     {
         return iPlayerPosX + (iPlayerWidth / 2);
     }
 
+    //------------------------------------------------------------------------
+    // This will be used to get the player's y possition.
     public int getPlayerY()
     {
         return iPlayerPosY;

@@ -49,6 +49,8 @@ public class GameLoop extends SurfaceView implements Runnable{
 
         a_ListOfProjectiles = new ArrayList<Projectile>();
 
+        enemy = new Enemies();
+
         // Set Bitmap Sizes.
 
         background.setImageSize(screenSize.x, screenSize.y);
@@ -76,6 +78,8 @@ public class GameLoop extends SurfaceView implements Runnable{
         player.setPlayer(this.getContext());
 
         background.setBackground(this.getContext());
+
+        enemy.setEnemy(this.getContext());
 
     }
 
@@ -118,10 +122,14 @@ public class GameLoop extends SurfaceView implements Runnable{
     // This will hold all of the projectiles the player will shoot.
     private ArrayList<Projectile> a_ListOfProjectiles;
 
+    // This will hold all of the enemies and control all of their functions.
+    private Enemies enemy;
+
     //------------------------------------------------------------------------
     // Member Functions :
     //------------------------------------------------------------------------
 
+    //------------------------------------------------------------------------
     // This wil be used to create a separate thread. This thread will be used for the main game loop.
     public void run()
     {
@@ -146,6 +154,8 @@ public class GameLoop extends SurfaceView implements Runnable{
         // Log.e(TAG, "(run) Game Running.");
     }
 
+    //------------------------------------------------------------------------
+    // This will be used to check for player input.
     @Override
     public boolean onTouchEvent(MotionEvent event)
     {
@@ -186,6 +196,7 @@ public class GameLoop extends SurfaceView implements Runnable{
         return true;
     }
 
+    //------------------------------------------------------------------------
     // This will be used to pause the game.
     public void pause()
     {
@@ -210,6 +221,7 @@ public class GameLoop extends SurfaceView implements Runnable{
         // Log.e(TAG, "(Pause) Game paused.");
     }
 
+    //------------------------------------------------------------------------
     // This will be used to resume the game.
     public void resume()
     {
@@ -222,7 +234,8 @@ public class GameLoop extends SurfaceView implements Runnable{
         // Log.e(TAG, "(Resume) Game Resumed");
     }
 
-
+    //------------------------------------------------------------------------
+    // This will be used to update all of the game objects in the game.
     protected void update()
     {
         // Update Game Objects.
@@ -233,6 +246,22 @@ public class GameLoop extends SurfaceView implements Runnable{
 
         // Buttons :
 
+        this.checkButtons();
+
+        // Projectiles :
+
+        this.updateProjectiles();
+
+        // Enemies :
+
+        updateEnemies();
+
+    }
+
+    //------------------------------------------------------------------------
+    // This will be used to check all of the buttons for the player's input.
+    protected void checkButtons()
+    {
         if(leftButton.checkZone(((int) fingerPosX), (int) (fingerPosY)))
         {
             player.movePlayer(true);
@@ -258,36 +287,68 @@ public class GameLoop extends SurfaceView implements Runnable{
             bHasShot = true;
 
         }
+    }
 
-        // Projectiles :
-
+    //------------------------------------------------------------------------
+    // This will be used to hold all of the projectiles main functionality.
+    protected void updateProjectiles()
+    {
         for (int i = 0; i < a_ListOfProjectiles.size(); i++)
         {
             if(a_ListOfProjectiles.get(i) != null)
             {
-                a_ListOfProjectiles.get(i).updateProjectile();
+                try {
+                    a_ListOfProjectiles.get(i).updateProjectile();
 
-                if(a_ListOfProjectiles.get(i).getHasCollided())
+                    if (a_ListOfProjectiles.get(i).getMarkedForDeletion())
+                    {
+                        a_ListOfProjectiles.remove(i);
+
+                        a_ListOfProjectiles.trimToSize();
+
+                        Log.e(TAG, "(Update) Projectile Hit and Removed : " + a_ListOfProjectiles.size());
+
+                        bHasShot = false;
+                    }
+                }
+                catch (Exception e)
                 {
-                    a_ListOfProjectiles.remove(i);
+                    // Log.e(TAG, "(Update) No Projectiles To Update. ");
 
-                    a_ListOfProjectiles.trimToSize();
-
-                    Log.e(TAG, "(Update) Collided and removed : " + a_ListOfProjectiles.size());
-
-                    bHasShot = false;
+                    break;
                 }
             }
-            else
-            {
-                // Log.e(TAG, "(Update) No Projectiles To Update. ");
-
-                break;
-            }
         }
-
     }
 
+    protected void updateEnemies()
+    {
+
+        if(enemy != null)
+        {
+            for (int i = 0; i < a_ListOfProjectiles.size(); i++)
+            {
+                if (a_ListOfProjectiles.get(i) != null)
+                {
+                    if (enemy.enemyHit(a_ListOfProjectiles.get(i).getProjectileX(), a_ListOfProjectiles.get(i).getProjectileY()))
+                    {
+                        a_ListOfProjectiles.get(i).setHasCollided(true);
+                    }
+                }
+            }
+
+            enemy.updateEnemy();
+
+            if (enemy.getMarkForDeletion())
+            {
+                enemy = null;
+
+                Log.e(TAG, "(Update) Enemy Hit and Removed : ");
+            }
+        }
+    }
+
+    //------------------------------------------------------------------------
     // This will handle the drawing of the canvas.
     protected void drawCanvas(Canvas gameCanvas)
     {
@@ -306,6 +367,11 @@ public class GameLoop extends SurfaceView implements Runnable{
         fireButton.drawZone(gameCanvas);
 
         // Enemies
+
+        if(enemy != null)
+        {
+            enemy.drawEnemy(gameCanvas);
+        }
 
         // Projectiles
 
