@@ -79,7 +79,7 @@ public class Background {
         else
         {
 
-            Log.d(TAG, "drawBackground : Unable to draw item.");
+            Log.e(TAG, "drawBackground : Unable to draw item.");
 
         }
 

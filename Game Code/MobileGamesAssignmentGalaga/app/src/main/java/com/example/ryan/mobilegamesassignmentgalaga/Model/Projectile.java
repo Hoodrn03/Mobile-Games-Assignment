@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.util.Log;
 
@@ -21,12 +22,14 @@ public class Projectile {
     // Constructor :
     //------------------------------------------------------------------------
 
-    public Projectile(int newXPos, int newYPos)
+    public Projectile(int newXPos, int newYPos, int direction)
     {
 
         iProjectileXPos = newXPos;
 
         iProjectileYPos = newYPos;
+
+        iProjectileSpeed = direction;
 
     }
 
@@ -36,9 +39,11 @@ public class Projectile {
 
     private int iProjectileXPos, iProjectileYPos;
 
-    private int iProjectileSpeed = 25;
+    private int iProjectileSpeed = 5;
 
     private Bitmap projectile;
+
+    private Bitmap projectileToDraw;
 
     private Bitmap explosion;
 
@@ -46,15 +51,15 @@ public class Projectile {
 
     private Rect destRect;
 
-    int iProjectileHeight, iProjectileWidth;
+    private int iProjectileHeight, iProjectileWidth;
 
-    int iRow = 2;
-    int iColumn = 2;
+    private int iRow = 2;
+    private int iColumn = 2;
 
-    int iColumnCount = 0;
-    int iRowCount = 0;
+    private int iColumnCount = 0;
+    private int iRowCount = 0;
 
-    boolean hasCollided = false;
+    private boolean bHasCollided = false;
 
     //------------------------------------------------------------------------
     // Member Functions
@@ -65,8 +70,20 @@ public class Projectile {
 
         iProjectileYPos += iProjectileSpeed;
 
-        Log.e(TAG, "Projectile Pos : " + iProjectileXPos + " " + iProjectileYPos);
+        // Log.e(TAG, "(Update Projectile) Projectile Pos : " + iProjectileXPos + " " + iProjectileYPos);
 
+        destRect = new Rect(iProjectileXPos, iProjectileYPos, iProjectileXPos + iProjectileHeight, iProjectileYPos + iProjectileWidth);
+
+        if(iProjectileYPos <= 0)
+        {
+            bHasCollided = true;
+        }
+
+    }
+
+    public boolean getHasCollided()
+    {
+        return bHasCollided;
     }
 
     public void setProjectile(Context context)
@@ -77,12 +94,30 @@ public class Projectile {
 
         projectile = BitmapFactory.decodeResource(res, R.drawable.missile);
 
-        explosion = BitmapFactory.decodeResource(res, R.drawable.explosion);
+        projectileToDraw = Bitmap.createScaledBitmap(projectile, projectile.getWidth() / 4, projectile.getHeight() / 8, false);
 
         // Prepare Separate Frames.
 
+        iProjectileHeight = projectileToDraw.getHeight();
 
+        iProjectileWidth = projectileToDraw.getWidth();
 
+        sourceRect = new Rect(0, 0, iProjectileWidth, iProjectileHeight);
+
+        destRect = new Rect(iProjectileXPos, iProjectileYPos, iProjectileXPos + iProjectileHeight, iProjectileYPos + iProjectileWidth);
+    }
+
+    public void drawProjectile(Canvas canvas)
+    {
+
+        if(projectileToDraw != null)
+        {
+            canvas.drawBitmap(projectileToDraw, sourceRect, destRect, null);
+        }
+        else
+        {
+            Log.e(TAG, "(drawProjectile) Unable to draw item.");
+        }
 
     }
 

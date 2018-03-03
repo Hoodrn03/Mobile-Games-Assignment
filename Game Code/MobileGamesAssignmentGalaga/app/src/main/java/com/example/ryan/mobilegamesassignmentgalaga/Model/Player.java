@@ -10,6 +10,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.os.SystemClock;
 import android.util.Log;
 
 import com.example.ryan.mobilegamesassignmentgalaga.R;
@@ -60,7 +61,7 @@ public class Player {
 
     // This will hold the position on the sprite sheet for the item to be drawn.
     private int iRow = 3;
-    private int iColumn = 2;
+    private int iColumn = 3;
 
     // This will hold the current position on the sprite sheet.
     private int iRowCounter = 0;
@@ -69,6 +70,7 @@ public class Player {
     // These will be used to constrain the player to the device screen.
     private int iLeftBounds, iRightBounds;
 
+    private float fCurrTime, fPrevTime, fDeltaTime, fUpdateTimer;
 
     //------------------------------------------------------------------------
     // Member Functions :
@@ -77,14 +79,30 @@ public class Player {
     // This will be used to update the player.
     public void updatePlayer() {
 
-        frameToDraw();
+        fCurrTime = SystemClock.elapsedRealtime();
 
-        sourceRect.left = iColumnCounter * iPlayerWidth;
-        sourceRect.right = sourceRect.left + iPlayerWidth;
-        sourceRect.top = iRowCounter * iPlayerHeight;
-        sourceRect.bottom = sourceRect.top + iPlayerHeight;
+        fDeltaTime = fCurrTime - fPrevTime;
 
-        // Log.d(TAG, "Left : " + sourceRect.left + " Right : " + sourceRect.right + " Top : " + sourceRect.top + " Bottom : " + sourceRect.bottom);
+        fUpdateTimer += fDeltaTime;
+
+        Log.e(TAG, "(Update Player) DELTA TIME : " + fDeltaTime + " Current Timer : " + fUpdateTimer);
+
+        if(fUpdateTimer >= 500)
+        {
+            frameToDraw();
+
+            sourceRect.left = iColumnCounter * iPlayerWidth;
+            sourceRect.right = sourceRect.left + iPlayerWidth;
+            sourceRect.top = iRowCounter * iPlayerHeight;
+            sourceRect.bottom = sourceRect.top + iPlayerHeight;
+
+            fUpdateTimer = 0;
+
+        }
+
+        // Log.d(TAG, "(Update Player) Left : " + sourceRect.left + " Right : " + sourceRect.right + " Top : " + sourceRect.top + " Bottom : " + sourceRect.bottom);
+
+        fPrevTime = fCurrTime;
 
     }
 
@@ -157,7 +175,7 @@ public class Player {
             }
         }
 
-        Log.e(TAG, iPlayerPosX + " " + iPlayerPosY);
+        // Log.e(TAG,  "(Move Player) " + iPlayerPosX + " " + iPlayerPosY);
 
         destRect = new Rect(iPlayerPosX, iPlayerPosY, iPlayerPosX + iPlayerWidth, iPlayerPosY + iPlayerHeight);
     }
@@ -171,8 +189,18 @@ public class Player {
         }
         else
         {
-            Log.d(TAG, "drawPlayer : Unable to draw item.");
+            Log.e(TAG, "(drawPlayer) Unable to draw item.");
         }
+    }
+
+    public int getPlayerX()
+    {
+        return iPlayerPosX + (iPlayerWidth / 2);
+    }
+
+    public int getPlayerY()
+    {
+        return iPlayerPosY;
     }
 
 

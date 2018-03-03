@@ -14,6 +14,9 @@ import android.view.SurfaceView;
 
 import com.example.ryan.mobilegamesassignmentgalaga.R;
 
+import java.util.ArrayList;
+import java.util.Vector;
+
 import static android.content.ContentValues.TAG;
 
 /**
@@ -42,6 +45,9 @@ public class GameLoop extends SurfaceView implements Runnable{
 
         leftButton = new InputButton();
         rightButton = new InputButton();
+        fireButton = new InputButton();
+
+        a_ListOfProjectiles = new ArrayList<Projectile>();
 
         // Set Bitmap Sizes.
 
@@ -51,15 +57,15 @@ public class GameLoop extends SurfaceView implements Runnable{
 
         Paint paint = new Paint();
         Paint paint2 = new Paint();
+        Paint paint3 = new Paint();
 
-
-        paint.setColor(Color.RED);
-        paint.setStrokeWidth(10);
+        paint.setColor(Color.GREEN);
         paint2.setColor(Color.CYAN);
-        paint2.setStrokeWidth(10);
+        paint3.setColor(Color.RED);
 
         leftButton.setZoneBounds(0, screenSize.y - (screenSize.y / 8), screenSize.x / 2, screenSize.y, paint);
         rightButton.setZoneBounds(screenSize.x / 2, screenSize.y - (screenSize.y / 8), screenSize.x, screenSize.y, paint2);
+        fireButton.setZoneBounds(0, screenSize.y - (screenSize.y / 4), screens.x, screenSize.y - (screenSize.y / 8), paint3);
 
         // Initialise Player.
 
@@ -90,17 +96,27 @@ public class GameLoop extends SurfaceView implements Runnable{
     // This will be used to check if and where the player currently has pressed.
     private float fingerPosX, fingerPosY;
 
+    private boolean bHasShot = false;
+
     //------------------------------------------------------------------------
     // Classes :
     //------------------------------------------------------------------------
 
+    // This will hold the background for the game.
     private Background background;
 
+    // This will hold all of the function and actions for the player, as well as their sprite.
     private Player player;
 
+    // These will be used to detect input from the player.
     private InputButton leftButton;
 
     private InputButton rightButton;
+
+    private InputButton fireButton;
+
+    // This will hold all of the projectiles the player will shoot.
+    private ArrayList<Projectile> a_ListOfProjectiles;
 
     //------------------------------------------------------------------------
     // Member Functions :
@@ -127,7 +143,7 @@ public class GameLoop extends SurfaceView implements Runnable{
             holder.unlockCanvasAndPost(gameCanvas);
         }
 
-        Log.e(TAG, "run: Game Running.");
+        // Log.e(TAG, "(run) Game Running.");
     }
 
     @Override
@@ -140,16 +156,16 @@ public class GameLoop extends SurfaceView implements Runnable{
             // Pressed Screen.
             case MotionEvent.ACTION_DOWN:
 
-                Log.d(TAG, "Pressed...");
+                // Log.d(TAG, "(On Touch Event) Pressed");
 
-                Log.e(TAG, fingerPosX + " " + fingerPosY);
+                // Log.e(TAG, fingerPosX + " " + fingerPosY);
 
                 break;
 
             // Moved On Screen.
             case MotionEvent.ACTION_MOVE:
 
-                Log.d(TAG, "Moving!!!");
+                // Log.d(TAG, "(On Touch Event) Moving");
 
                 fingerPosX = event.getX();
                 fingerPosY = event.getY();
@@ -159,7 +175,7 @@ public class GameLoop extends SurfaceView implements Runnable{
             // Leaves The Screen.
             case MotionEvent.ACTION_UP:
 
-                Log.d(TAG, "Released???");
+                // Log.d(TAG, "(On Touch Event) Released");
 
                 fingerPosX = 0;
                 fingerPosY = 0;
@@ -191,7 +207,7 @@ public class GameLoop extends SurfaceView implements Runnable{
 
         t = null;
 
-        Log.e(TAG, "pause: Game paused.");
+        // Log.e(TAG, "(Pause) Game paused.");
     }
 
     // This will be used to resume the game.
@@ -203,7 +219,7 @@ public class GameLoop extends SurfaceView implements Runnable{
 
         t.start();
 
-        Log.e(TAG, "resume: Game Resumed");
+        // Log.e(TAG, "(Resume) Game Resumed");
     }
 
 
@@ -211,15 +227,63 @@ public class GameLoop extends SurfaceView implements Runnable{
     {
         // Update Game Objects.
 
+        // Player :
+
         player.updatePlayer();
+
+        // Buttons :
 
         if(leftButton.checkZone(((int) fingerPosX), (int) (fingerPosY)))
         {
             player.movePlayer(true);
         }
+
         if (rightButton.checkZone(((int) fingerPosX), (int) (fingerPosY)))
         {
             player.movePlayer(false);
+        }
+
+        if(fireButton.checkZone(((int) fingerPosX), (int) (fingerPosY)) && !bHasShot)
+        {
+            Projectile projectile = new Projectile(player.getPlayerX(), player.getPlayerY(), -10);
+
+            projectile.setProjectile(this.getContext());
+
+            // Log.e(TAG, "(Update) Fire");
+
+            a_ListOfProjectiles.add(projectile);
+
+            a_ListOfProjectiles.trimToSize();
+
+            bHasShot = true;
+
+        }
+
+        // Projectiles :
+
+        for (int i = 0; i < a_ListOfProjectiles.size(); i++)
+        {
+            if(a_ListOfProjectiles.get(i) != null)
+            {
+                a_ListOfProjectiles.get(i).updateProjectile();
+
+                if(a_ListOfProjectiles.get(i).getHasCollided())
+                {
+                    a_ListOfProjectiles.remove(i);
+
+                    a_ListOfProjectiles.trimToSize();
+
+                    Log.e(TAG, "(Update) Collided and removed : " + a_ListOfProjectiles.size());
+
+                    bHasShot = false;
+                }
+            }
+            else
+            {
+                // Log.e(TAG, "(Update) No Projectiles To Update. ");
+
+                break;
+            }
         }
 
     }
@@ -229,11 +293,35 @@ public class GameLoop extends SurfaceView implements Runnable{
     {
         // Draw Items to the canvas.
 
+        // Backgrounds
         background.drawBackground(gameCanvas);
 
+        // Players
         player.drawPlayer(gameCanvas);
+
+        // Buttons
 
         leftButton.drawZone(gameCanvas);
         rightButton.drawZone(gameCanvas);
+        fireButton.drawZone(gameCanvas);
+
+        // Enemies
+
+        // Projectiles
+
+        for (int i = 0; i < a_ListOfProjectiles.size(); i++)
+        {
+            if(a_ListOfProjectiles.get(i) != null)
+            {
+                a_ListOfProjectiles.get(i).drawProjectile(gameCanvas);
+            }
+            else
+            {
+                // Log.e(TAG, "(Draw Canvas) Array Out Of Bounds :- Projectiles.");
+
+                break;
+            }
+        }
+
     }
 }

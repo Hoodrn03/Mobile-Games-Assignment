@@ -29,9 +29,9 @@ public class InputButton {
     //------------------------------------------------------------------------
 
     // This will be used to check for the player's input.
-    protected Rect inputZone;
+    private Rect inputZone;
 
-    protected Paint paint;
+    private Paint paint;
 
     private int buttonPosX, buttonPosY;
 
@@ -47,7 +47,7 @@ public class InputButton {
         {
             if(pressedX > inputZone.right && pressedY > inputZone.bottom)
             {
-                // Log.e(TAG, "Within Zone");
+                // Log.e(TAG, "(Check Zone) Within Zone");
 
                 return true;
             }
@@ -65,7 +65,7 @@ public class InputButton {
         buttonWidth = newWidth;
         buttonHeight = newHeight;
 
-        // Log.e(TAG, buttonPosX + "  " + buttonPosY);
+        // Log.e(TAG, "(Set Zone Bounds) " + buttonPosX + "  " + buttonPosY);
 
         inputZone = new Rect(buttonWidth, buttonHeight, buttonPosX, buttonPosY);
 
@@ -73,6 +73,7 @@ public class InputButton {
 
         paint = newPaint;
         paint.setStrokeWidth(1);
+        paint.setAlpha(50);
 
     }
 
