@@ -54,10 +54,11 @@ public class GameLoop extends SurfaceView implements Runnable{
         a_ListOfProjectiles = new ArrayList<Projectile>();
         playerProjectile = new Projectile();
 
-        enemy = new Enemies();
+        a_ListOfEnemies = new ArrayList<Enemies>();
 
         // Prepare UI
 
+        this.setUiPaint();
 
         // Set Bitmap Sizes.
 
@@ -81,15 +82,19 @@ public class GameLoop extends SurfaceView implements Runnable{
 
         player.setBounds(0, screenSize.x);
 
-        enemy.setBounds(0, screenSize.x);
+        for(int i = 0; i < 10; i++)
+        {
+            Enemies enemy = new Enemies(this.getContext(), 0, screenSize.x, screenSize.x, screenSize.y - (screenSize.y / 2));
+
+            a_ListOfEnemies.add(enemy);
+        }
+
 
         // Set Bitmaps.
 
         player.setPlayer(this.getContext());
 
         background.setBackground(this.getContext());
-
-        enemy.setEnemy(this.getContext());
 
     }
 
@@ -112,6 +117,16 @@ public class GameLoop extends SurfaceView implements Runnable{
 
     private boolean bHasShot = false;
 
+    private Paint uiPaint;
+
+    private int iLivesXPos = 20, iLivesYPos = 50;
+
+    private int iScore = 0;
+
+    private int iScoreXPos = 20, iScoreYPos = 100;
+
+    private int iScoreCount = 0;
+
     //------------------------------------------------------------------------
     // Classes :
     //------------------------------------------------------------------------
@@ -132,7 +147,7 @@ public class GameLoop extends SurfaceView implements Runnable{
     private Projectile playerProjectile;
 
     // This will hold all of the enemies and control all of their functions.
-    private Enemies enemy;
+    private ArrayList<Enemies> a_ListOfEnemies;
 
     //------------------------------------------------------------------------
     // Member Functions :
@@ -254,6 +269,7 @@ public class GameLoop extends SurfaceView implements Runnable{
         // Player :
 
         this.updatePlayer();
+        this.updateScore();
 
         // Buttons :
 
@@ -294,6 +310,29 @@ public class GameLoop extends SurfaceView implements Runnable{
             bHasShot = true;
 
         }
+    }
+
+    //------------------------------------------------------------------------
+    // This will be used to check if the player has killed enough enemies to get another life.
+    protected void updateScore()
+    {
+        if(iScoreCount >= 10000)
+        {
+            player.increaseLives();
+
+            iScoreCount = 0;
+        }
+    }
+
+    //------------------------------------------------------------------------
+    // This will be used to prepare the user interface paint for drawing.
+    protected void setUiPaint()
+    {
+        uiPaint = new Paint();
+
+        uiPaint.setColor(Color.WHITE);
+
+        uiPaint.setTextSize(30);
     }
 
     //------------------------------------------------------------------------
@@ -363,31 +402,34 @@ public class GameLoop extends SurfaceView implements Runnable{
     // This will be used to update all enemies currently in the game.
     protected void updateEnemies()
     {
-
-        if(enemy != null)
+        for (int i = 0; i < a_ListOfEnemies.size(); i++)
         {
-            enemy.updateEnemy();
-
-            if(playerProjectile != null)
+            if(a_ListOfEnemies.get(i) != null)
             {
-                if(enemy.enemyHit(playerProjectile.getProjectileX(), playerProjectile.getProjectileY()))
+                a_ListOfEnemies.get(i).updateEnemy();
+
+                if(playerProjectile != null)
                 {
-                    playerProjectile.setHasCollided(true);
+                    if(a_ListOfEnemies.get(i).enemyHit((playerProjectile.getProjectileX()), playerProjectile.getProjectileY()))
+                    {
+                        playerProjectile.setHasCollided(true);
+                    }
                 }
+
+                if(a_ListOfEnemies.get(i).fireProjectile())
+                {
+                    Projectile projectile = new Projectile(a_ListOfEnemies.get(i).getEnemyXPos(), a_ListOfEnemies.get(i).getEnemyYPos(), 10);
+
+                    projectile.setProjectile(this.getContext(), screenSize.y);
+
+                    a_ListOfProjectiles.add(projectile);
+
+                    a_ListOfProjectiles.trimToSize();
+                }
+
             }
-
-            if(enemy.fireProjectile())
-            {
-                Projectile projectile = new Projectile(enemy.getEnemyXPos(), enemy.getEnemyYPos(), 10);
-
-                projectile.setProjectile(this.getContext(), screenSize.y);
-
-                a_ListOfProjectiles.add(projectile);
-
-                a_ListOfProjectiles.trimToSize();
-            }
-
         }
+
     }
 
     //------------------------------------------------------------------------
@@ -420,9 +462,12 @@ public class GameLoop extends SurfaceView implements Runnable{
         }
         // Enemies
 
-        if(enemy != null)
+        for (int i = 0; i < a_ListOfEnemies.size(); i++)
         {
-            enemy.drawEnemy(gameCanvas);
+            if(a_ListOfEnemies.get(i) != null)
+            {
+                a_ListOfEnemies.get(i).drawEnemy(gameCanvas);
+            }
         }
 
         // Projectiles.
@@ -448,6 +493,9 @@ public class GameLoop extends SurfaceView implements Runnable{
 
         // User Interface :
 
+        gameCanvas.drawText("Lives : " + player.getLives(), iLivesXPos, iLivesYPos, uiPaint);
+
+        gameCanvas.drawText("Score : " + iScore, iScoreXPos, iScoreYPos, uiPaint);
 
     }
 
@@ -472,14 +520,25 @@ public class GameLoop extends SurfaceView implements Runnable{
 
         // Check Enemies :
 
-        if(enemy != null)
+        for (int i = 0; i < a_ListOfEnemies.size(); i++)
         {
-            if (enemy.getMarkForDeletion())
+            if(a_ListOfEnemies.get(i) != null)
             {
-                enemy = null;
+                if (a_ListOfEnemies.get(i).getMarkForDeletion()) {
 
-                // Log.e(TAG, "(Delete Items) Enemy Hit and Removed : ");
+                    a_ListOfEnemies.remove(i);
+
+                    a_ListOfEnemies.trimToSize();
+
+                    iScore += 400;
+                    iScoreCount += 400;
+
+                    // Log.e(TAG, "(Delete Items) Enemy Hit and Removed : ");
+                }
             }
         }
+
     }
+
+    //------------------------------------------------------------------------
 }

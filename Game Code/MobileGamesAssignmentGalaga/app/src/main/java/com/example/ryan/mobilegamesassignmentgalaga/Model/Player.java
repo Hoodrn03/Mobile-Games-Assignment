@@ -139,6 +139,13 @@ public class Player {
     }
 
     //------------------------------------------------------------------------
+    // This will add 1 to the player's current number of lives.
+    public void increaseLives()
+    {
+        iLives += 1;
+    }
+
+    //------------------------------------------------------------------------
     // This will be used to set the leftmost and rightmost bounds for the player constrining them to
     // the screen.
     public void setBounds(int newLeftBounds, int newRightBounds)

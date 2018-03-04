@@ -27,8 +27,19 @@ public class Enemies {
     // Constructor
     //------------------------------------------------------------------------
 
-    Enemies()
+    Enemies(Context context, int leftBounds, int rightBounds, int screenSizeX, int screenSizeY)
     {
+        this.setEnemy(context);
+
+        this.setBounds(leftBounds, rightBounds);
+
+        Random r = new Random();
+
+        iEnemyXPos = r.nextInt(screenSizeX);
+
+        iEnemyYPos = r.nextInt(screenSizeY);
+
+        iSpeed = r.nextInt(20) + 5;
 
     }
 
@@ -36,7 +47,7 @@ public class Enemies {
     // Data Members
     //------------------------------------------------------------------------
 
-    private int iEnemyXPos = 100, iEnemyYPos;
+    private int iEnemyXPos, iEnemyYPos;
 
     private int iEnemyHeight, iEnemyWidth;
 
@@ -65,6 +76,8 @@ public class Enemies {
     private boolean bMoveLeft = true;
 
     private int iLeftBounds, iRightBounds;
+
+    private int iShootChance = 500; // 1/ 500.
 
     //------------------------------------------------------------------------
     // Member Functions
@@ -174,7 +187,7 @@ public class Enemies {
 
         int rand;
 
-        rand = r.nextInt(250);
+        rand = r.nextInt(iShootChance);
 
         // Log.e(TAG, "(Fire Projectiles) Current Rand : " + rand);
 
@@ -238,6 +251,8 @@ public class Enemies {
         iEnemyHeight = enemyToDraw.getHeight() / iRow;
 
         iEnemyWidth = enemyToDraw.getWidth() / iColumn;
+
+        // Set position.
 
         sourceRect = new Rect(0, 0, iEnemyWidth, iEnemyHeight);
 
