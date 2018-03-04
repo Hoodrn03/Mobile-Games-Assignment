@@ -39,13 +39,11 @@ public class Background {
     // This will hold the x and y for the background.
     private int imageX, imageY;
 
-    // This will hold the relative screen size of the device.
-    private Point screenSize;
-
     //------------------------------------------------------------------------
     // Member Functions :
     //------------------------------------------------------------------------
 
+    //------------------------------------------------------------------------
     // This will be used to set the desired size of the background image.
     public void setImageSize(int newX, int newY)
     {
@@ -53,9 +51,10 @@ public class Background {
 
         imageY = newY;
 
-        Log.e(TAG, "Device size is : X - " + imageX + " Y -" + imageY);
+        // Log.e(TAG, "(Set Image Size) Device size is : X - " + imageX + " Y -" + imageY);
     }
 
+    //------------------------------------------------------------------------
     // This will be used to select a background for the game.
     public void setBackground(Context context)
     {
@@ -67,6 +66,7 @@ public class Background {
 
     }
 
+    //------------------------------------------------------------------------
     // This will draw the background on a given canvas.
     public void drawBackground(Canvas canvas) {
 
@@ -79,7 +79,7 @@ public class Background {
         else
         {
 
-            Log.e(TAG, "drawBackground : Unable to draw item.");
+            Log.e(TAG, "(Draw Background) Unable to draw item.");
 
         }
 

@@ -7,10 +7,14 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.os.Process;
+import android.support.constraint.ConstraintLayout;
+import android.text.Layout;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.example.ryan.mobilegamesassignmentgalaga.R;
 
@@ -48,8 +52,12 @@ public class GameLoop extends SurfaceView implements Runnable{
         fireButton = new InputButton();
 
         a_ListOfProjectiles = new ArrayList<Projectile>();
+        playerProjectile = new Projectile();
 
         enemy = new Enemies();
+
+        // Prepare UI
+
 
         // Set Bitmap Sizes.
 
@@ -72,6 +80,8 @@ public class GameLoop extends SurfaceView implements Runnable{
         // Initialise Player.
 
         player.setBounds(0, screenSize.x);
+
+        enemy.setBounds(0, screenSize.x);
 
         // Set Bitmaps.
 
@@ -114,13 +124,12 @@ public class GameLoop extends SurfaceView implements Runnable{
 
     // These will be used to detect input from the player.
     private InputButton leftButton;
-
     private InputButton rightButton;
-
     private InputButton fireButton;
 
     // This will hold all of the projectiles the player will shoot.
     private ArrayList<Projectile> a_ListOfProjectiles;
+    private Projectile playerProjectile;
 
     // This will hold all of the enemies and control all of their functions.
     private Enemies enemy;
@@ -147,6 +156,8 @@ public class GameLoop extends SurfaceView implements Runnable{
             this.update();
 
             this.drawCanvas(gameCanvas);
+
+            this.deleteItems();
 
             holder.unlockCanvasAndPost(gameCanvas);
         }
@@ -242,7 +253,7 @@ public class GameLoop extends SurfaceView implements Runnable{
 
         // Player :
 
-        player.updatePlayer();
+        this.updatePlayer();
 
         // Buttons :
 
@@ -254,7 +265,7 @@ public class GameLoop extends SurfaceView implements Runnable{
 
         // Enemies :
 
-        updateEnemies();
+        this.updateEnemies();
 
     }
 
@@ -274,15 +285,11 @@ public class GameLoop extends SurfaceView implements Runnable{
 
         if(fireButton.checkZone(((int) fingerPosX), (int) (fingerPosY)) && !bHasShot)
         {
-            Projectile projectile = new Projectile(player.getPlayerX(), player.getPlayerY(), -10);
+            playerProjectile = new Projectile(player.getPlayerX(), player.getPlayerY(), -10);
 
-            projectile.setProjectile(this.getContext());
+            playerProjectile.setProjectile(this.getContext(), screenSize.y);
 
             // Log.e(TAG, "(Update) Fire");
-
-            a_ListOfProjectiles.add(projectile);
-
-            a_ListOfProjectiles.trimToSize();
 
             bHasShot = true;
 
@@ -290,26 +297,57 @@ public class GameLoop extends SurfaceView implements Runnable{
     }
 
     //------------------------------------------------------------------------
+    // This will be used to hold all of the player's update functions.
+    protected void updatePlayer()
+    {
+        player.updatePlayer();
+
+        for (int i = 0; i < a_ListOfProjectiles.size(); i++)
+        {
+            if (a_ListOfProjectiles.get(i) != null)
+            {
+                if(player.playerHit(a_ListOfProjectiles.get(i).getProjectileX(), a_ListOfProjectiles.get(i).getProjectileY()))
+                {
+                    a_ListOfProjectiles.get(i).setHasCollided(true);
+                }
+            }
+        }
+
+
+    }
+
+    //------------------------------------------------------------------------
     // This will be used to hold all of the projectiles main functionality.
     protected void updateProjectiles()
     {
+        if(playerProjectile != null)
+        {
+            try
+            {
+                playerProjectile.updateProjectile();
+            }
+            catch(Exception e)
+            {
+                // Log.e(TAG, "(Update) No Projectiles To Update. ");
+            }
+
+            if(playerProjectile.getMarkedForDeletion())
+            {
+                playerProjectile = null;
+
+                bHasShot = false;
+            }
+
+        }
+
         for (int i = 0; i < a_ListOfProjectiles.size(); i++)
         {
             if(a_ListOfProjectiles.get(i) != null)
             {
-                try {
+                try
+                {
                     a_ListOfProjectiles.get(i).updateProjectile();
 
-                    if (a_ListOfProjectiles.get(i).getMarkedForDeletion())
-                    {
-                        a_ListOfProjectiles.remove(i);
-
-                        a_ListOfProjectiles.trimToSize();
-
-                        Log.e(TAG, "(Update) Projectile Hit and Removed : " + a_ListOfProjectiles.size());
-
-                        bHasShot = false;
-                    }
                 }
                 catch (Exception e)
                 {
@@ -321,30 +359,34 @@ public class GameLoop extends SurfaceView implements Runnable{
         }
     }
 
+    //------------------------------------------------------------------------
+    // This will be used to update all enemies currently in the game.
     protected void updateEnemies()
     {
 
         if(enemy != null)
         {
-            for (int i = 0; i < a_ListOfProjectiles.size(); i++)
+            enemy.updateEnemy();
+
+            if(playerProjectile != null)
             {
-                if (a_ListOfProjectiles.get(i) != null)
+                if(enemy.enemyHit(playerProjectile.getProjectileX(), playerProjectile.getProjectileY()))
                 {
-                    if (enemy.enemyHit(a_ListOfProjectiles.get(i).getProjectileX(), a_ListOfProjectiles.get(i).getProjectileY()))
-                    {
-                        a_ListOfProjectiles.get(i).setHasCollided(true);
-                    }
+                    playerProjectile.setHasCollided(true);
                 }
             }
 
-            enemy.updateEnemy();
-
-            if (enemy.getMarkForDeletion())
+            if(enemy.fireProjectile())
             {
-                enemy = null;
+                Projectile projectile = new Projectile(enemy.getEnemyXPos(), enemy.getEnemyYPos(), 10);
 
-                Log.e(TAG, "(Update) Enemy Hit and Removed : ");
+                projectile.setProjectile(this.getContext(), screenSize.y);
+
+                a_ListOfProjectiles.add(projectile);
+
+                a_ListOfProjectiles.trimToSize();
             }
+
         }
     }
 
@@ -355,17 +397,27 @@ public class GameLoop extends SurfaceView implements Runnable{
         // Draw Items to the canvas.
 
         // Backgrounds
-        background.drawBackground(gameCanvas);
+
+        if(background != null)
+        {
+            background.drawBackground(gameCanvas);
+        }
 
         // Players
-        player.drawPlayer(gameCanvas);
+
+        if(player != null)
+        {
+            player.drawPlayer(gameCanvas);
+        }
 
         // Buttons
 
-        leftButton.drawZone(gameCanvas);
-        rightButton.drawZone(gameCanvas);
-        fireButton.drawZone(gameCanvas);
-
+        if(leftButton  != null && rightButton != null && fireButton != null)
+        {
+            leftButton.drawZone(gameCanvas);
+            rightButton.drawZone(gameCanvas);
+            fireButton.drawZone(gameCanvas);
+        }
         // Enemies
 
         if(enemy != null)
@@ -373,7 +425,12 @@ public class GameLoop extends SurfaceView implements Runnable{
             enemy.drawEnemy(gameCanvas);
         }
 
-        // Projectiles
+        // Projectiles.
+
+        if(playerProjectile != null)
+        {
+            playerProjectile.drawProjectile(gameCanvas);
+        }
 
         for (int i = 0; i < a_ListOfProjectiles.size(); i++)
         {
@@ -389,5 +446,40 @@ public class GameLoop extends SurfaceView implements Runnable{
             }
         }
 
+        // User Interface :
+
+
+    }
+
+    //------------------------------------------------------------------------
+    // This will be used to remove all items from the game at the end of the frame.
+    public void deleteItems()
+    {
+        // Check Projectiles :
+
+        for (int i = 0; i < a_ListOfProjectiles.size(); i++)
+        {
+            if (a_ListOfProjectiles.get(i).getMarkedForDeletion())
+            {
+                a_ListOfProjectiles.remove(i);
+
+                a_ListOfProjectiles.trimToSize();
+
+                // Log.e(TAG, "(Delete Items) Projectile Hit and Removed : " + a_ListOfProjectiles.size());
+
+            }
+        }
+
+        // Check Enemies :
+
+        if(enemy != null)
+        {
+            if (enemy.getMarkForDeletion())
+            {
+                enemy = null;
+
+                // Log.e(TAG, "(Delete Items) Enemy Hit and Removed : ");
+            }
+        }
     }
 }

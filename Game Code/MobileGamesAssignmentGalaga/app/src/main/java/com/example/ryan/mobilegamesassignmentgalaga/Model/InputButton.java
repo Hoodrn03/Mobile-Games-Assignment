@@ -41,6 +41,8 @@ public class InputButton {
     // Member Functions  :
     //------------------------------------------------------------------------
 
+    //------------------------------------------------------------------------
+    // This will be used to check if the given coordinates are within this input button.
     public boolean checkZone(int pressedX, int pressedY)
     {
         if(pressedX < inputZone.left && pressedY < inputZone.top)
@@ -56,6 +58,8 @@ public class InputButton {
         return false;
     }
 
+    //------------------------------------------------------------------------
+    // This will be used to set the bounds of this input button.
     public void setZoneBounds(int newX, int newY, int newWidth, int newHeight, Paint newPaint)
     {
 
@@ -77,6 +81,8 @@ public class InputButton {
 
     }
 
+    //------------------------------------------------------------------------
+    // This will be used to draw this input button.
     public void drawZone(Canvas canvas)
     {
         canvas.drawRect(inputZone, paint);

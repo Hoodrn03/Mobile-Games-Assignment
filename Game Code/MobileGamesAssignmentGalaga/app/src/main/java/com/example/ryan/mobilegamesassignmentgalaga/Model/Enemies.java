@@ -36,7 +36,7 @@ public class Enemies {
     // Data Members
     //------------------------------------------------------------------------
 
-    private int iEnemyXPos, iEnemyYPos;
+    private int iEnemyXPos = 100, iEnemyYPos;
 
     private int iEnemyHeight, iEnemyWidth;
 
@@ -58,12 +58,20 @@ public class Enemies {
     private int iHealth;
     private int iDamage = 100;
 
+    private int iSpeed = 10;
+
     private boolean bMarkForDeletion = false;
+
+    private boolean bMoveLeft = true;
+
+    private int iLeftBounds, iRightBounds;
 
     //------------------------------------------------------------------------
     // Member Functions
     //------------------------------------------------------------------------
 
+    //------------------------------------------------------------------------
+    // This will be used to update this enemy during the game.
     public void updateEnemy()
     {
         fCurrTime = SystemClock.elapsedRealtime();
@@ -76,7 +84,9 @@ public class Enemies {
 
         if(fUpdateTimer >= 200)
         {
-            frameToDraw();
+            this.frameToDraw();
+
+            this.moveEnemy();
 
             sourceRect.left = iColumnCounter * iEnemyWidth;
             sourceRect.right = sourceRect.left + iEnemyWidth;
@@ -85,6 +95,7 @@ public class Enemies {
 
             fUpdateTimer = 0;
 
+            this.fireProjectile();
         }
 
         if(iHealth <= 0)
@@ -95,6 +106,20 @@ public class Enemies {
         // Log.d(TAG, "(Update Player) Left : " + sourceRect.left + " Right : " + sourceRect.right + " Top : " + sourceRect.top + " Bottom : " + sourceRect.bottom);
 
         fPrevTime = fCurrTime;
+    }
+
+    //------------------------------------------------------------------------
+    // This will return this enemy's X position.
+    public int getEnemyXPos()
+    {
+        return iEnemyXPos + (iEnemyWidth / 2);
+    }
+
+    //------------------------------------------------------------------------
+    // This will return this enemy's Y position.
+    public int getEnemyYPos()
+    {
+        return iEnemyYPos + iEnemyHeight;
     }
 
     //------------------------------------------------------------------------
@@ -120,6 +145,8 @@ public class Enemies {
 
     }
 
+    //------------------------------------------------------------------------
+    // This will be used to check if this enemy has been hit.
     public boolean enemyHit(int projectileX, int projectileY)
     {
         if(projectileX > iEnemyXPos && projectileX < iEnemyXPos + iEnemyWidth)
@@ -139,14 +166,39 @@ public class Enemies {
         return false;
     }
 
+    //------------------------------------------------------------------------
+    // This will be used to allow for the enemy to fire a projectile.
+    public boolean fireProjectile()
+    {
+        Random r = new Random();
+
+        int rand;
+
+        rand = r.nextInt(250);
+
+        // Log.e(TAG, "(Fire Projectiles) Current Rand : " + rand);
+
+        if(rand == 1)
+        {
+            // Log.e(TAG, "(Fire Projectiles) : Fire Cannons!");
+
+            return true;
+        }
+
+        return false;
+    }
+
+    //------------------------------------------------------------------------
+    // This will be used to check if this enemy should be deleted.
     public boolean getMarkForDeletion()
     {
         return bMarkForDeletion;
     }
 
+    //------------------------------------------------------------------------
+    // This will be used to create the enemy. It will give it a random bitmap and health value.
     public void setEnemy(Context context)
     {
-
         // Generate Random Number.
 
         Random r = new Random();
@@ -199,6 +251,54 @@ public class Enemies {
         Log.e(TAG, "(Set Enemy) Enemies Current Health " + iHealth);
     }
 
+    //------------------------------------------------------------------------
+    // This will be used to make the enemy move on the screen. (Left To Right).
+    public void moveEnemy()
+    {
+
+        // Move Enemy.
+
+        if(bMoveLeft)
+        {
+            if(iEnemyXPos > iLeftBounds)
+            {
+                iEnemyXPos -= iSpeed;
+            }
+        }
+
+        else if(iEnemyXPos + iEnemyWidth < iRightBounds)
+        {
+            iEnemyXPos += iSpeed;
+        }
+
+        // Check Direction.
+
+        if(iEnemyXPos <= iLeftBounds)
+        {
+            bMoveLeft = false;
+        }
+        else if(iEnemyXPos + iEnemyWidth >= iRightBounds)
+        {
+            bMoveLeft = true;
+        }
+
+        // Log.e(TAG, "(Move Enemy) : " + iEnemyXPos);
+
+        destRect = new Rect(iEnemyXPos, iEnemyYPos, iEnemyXPos + iEnemyWidth, iEnemyYPos + iEnemyHeight);
+    }
+
+    //------------------------------------------------------------------------
+    // This will be used to set the leftmost and rightmost bounds for the player constrining them to
+    // the screen.
+    public void setBounds(int newLeftBounds, int newRightBounds)
+    {
+        iLeftBounds = newLeftBounds;
+
+        iRightBounds = newRightBounds;
+    }
+
+    //------------------------------------------------------------------------
+    // This will be used to draw this enemy.
     public void drawEnemy(Canvas canvas)
     {
         if(enemyToDraw != null)

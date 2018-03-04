@@ -23,6 +23,11 @@ public class Projectile {
     // Constructor :
     //------------------------------------------------------------------------
 
+    public Projectile()
+    {
+
+    }
+
     public Projectile(int newXPos, int newYPos, int direction)
     {
 
@@ -68,11 +73,14 @@ public class Projectile {
 
     private boolean bMarkForDeletion = false;
 
+    private int iLowerBounds;
 
     //------------------------------------------------------------------------
     // Member Functions
     //------------------------------------------------------------------------
 
+    //------------------------------------------------------------------------
+    // This will be used to update this projectile within the game.
     public void updateProjectile() throws InterruptedException {
 
         if(!bHasCollided)
@@ -83,15 +91,17 @@ public class Projectile {
 
             destRect = new Rect(iProjectileXPos, iProjectileYPos, iProjectileXPos + iProjectileHeight, iProjectileYPos + iProjectileWidth);
 
-            if (iProjectileYPos <= 0)
+            if (iProjectileYPos <= 0 || iProjectileYPos >= iLowerBounds - 50)
             {
                 bHasCollided = true;
+
+                Log.e(TAG, "(Update Projectiles) : Collided");
             }
         }
 
         else
         {
-            frameToDraw();
+            this.frameToDraw();
 
             expSourceRect.left = iColumnCounter * iExplosionWidth;
             expSourceRect.right = expSourceRect.left + iExplosionWidth;
@@ -127,16 +137,22 @@ public class Projectile {
 
     }
 
-
+    //------------------------------------------------------------------------
+    // This will check if this projectile should be deleted.
     public boolean getMarkedForDeletion()
     {
         return bMarkForDeletion;
     }
 
-    public void setProjectile(Context context)
+    //------------------------------------------------------------------------
+    // This will be used to set both of the projectile's bitmaps, the missile and the explosion.
+    public void setProjectile(Context context, int newLowerBounds)
     {
-        // Set Bitmaps.
+        // Screen bounds.
 
+        iLowerBounds = newLowerBounds;
+
+        // Set Bitmaps.
 
         // Projectile :
         Resources res = context.getResources();
@@ -150,36 +166,46 @@ public class Projectile {
 
         // Prepare Separate Frames.
 
+        // Projectile :
         iProjectileHeight = projectileToDraw.getHeight();
 
         iProjectileWidth = projectileToDraw.getWidth();
 
+        projSourceRect = new Rect(0, 0, iProjectileWidth, iProjectileHeight);
+
+        destRect = new Rect(iProjectileXPos, iProjectileYPos, iProjectileXPos + iProjectileHeight, iProjectileYPos + iProjectileWidth);
+
+        // Explosion :
         iExplosionHeight = explosion.getHeight();
 
         iExplosionWidth = explosion.getWidth();
 
-        projSourceRect = new Rect(0, 0, iProjectileWidth, iProjectileHeight);
-
         expSourceRect = new Rect(0, 0, iExplosionWidth, iExplosionHeight);
-
-        destRect = new Rect(iProjectileXPos, iProjectileYPos, iProjectileXPos + iProjectileHeight, iProjectileYPos + iProjectileWidth);
     }
 
+    //------------------------------------------------------------------------
+    // This will be used to set the value of hasHit when the projectile hits a surface.
     public void setHasCollided(boolean hasHit)
     {
         bHasCollided = hasHit;
     }
 
+    //------------------------------------------------------------------------
+    // This will return the value of projectileX.
     public int getProjectileX()
     {
         return iProjectileXPos;
     }
 
+    //------------------------------------------------------------------------
+    // This will return the value of projectileY
     public int getProjectileY()
     {
         return iProjectileYPos;
     }
 
+    //------------------------------------------------------------------------
+    // This will be used to draw this projectile.
     public void drawProjectile(Canvas canvas)
     {
         if(!bHasCollided)
@@ -190,7 +216,7 @@ public class Projectile {
             }
             else
             {
-                Log.e(TAG, "(drawProjectile) Unable to draw item.");
+                // Log.e(TAG, "(drawProjectile) Projectile : Unable to draw item.");
             }
         }
 
@@ -202,7 +228,7 @@ public class Projectile {
             }
             else
             {
-                Log.e(TAG, "(drawProjectile) Unable to draw item.");
+                // Log.e(TAG, "(drawProjectile) Explosion : Unable to draw item.");
             }
         }
 

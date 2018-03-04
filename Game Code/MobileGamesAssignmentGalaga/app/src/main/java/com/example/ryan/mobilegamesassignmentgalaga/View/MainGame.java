@@ -8,17 +8,32 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 
 import com.example.ryan.mobilegamesassignmentgalaga.Model.GameLoop;
+import com.example.ryan.mobilegamesassignmentgalaga.R;
 
 import static android.content.ContentValues.TAG;
 
 public class MainGame extends AppCompatActivity {
 
+    //------------------------------------------------------------------------
+    // Variables :
+    //------------------------------------------------------------------------
+
+    // This will hold the entire game.
     GameLoop gl;
 
+
+    //------------------------------------------------------------------------
+    // Functions :
+    //------------------------------------------------------------------------
+
+    //------------------------------------------------------------------------
+    // This will be called when the activity is first created.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
 
         //Flags to set the to a full screen without any task bar.
@@ -44,14 +59,16 @@ public class MainGame extends AppCompatActivity {
 
         super.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
+
+
         gl = new GameLoop(this, screenSize);
 
         setContentView(gl);
 
-
     }
 
-
+    //------------------------------------------------------------------------
+    // This will be called when the game is paused (exited while still open).
     @Override
     protected void onPause()
     {
@@ -61,6 +78,8 @@ public class MainGame extends AppCompatActivity {
 
     }
 
+    //------------------------------------------------------------------------
+    // This will be called when the activity is reopened (from a paused state).
     @Override
     protected void onResume()
     {

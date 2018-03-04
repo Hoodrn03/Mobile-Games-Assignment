@@ -44,6 +44,9 @@ public class Player {
     // This will be the player's edited sprite for drawing.
     private Bitmap playerToDraw;
 
+    // This will hold the number of lives the player has (number of hits they can take).
+    private int iLives = 3;
+
     // These will hold the sprite's x and y coordinates.
     private int iPlayerPosX,iPlayerPosY;
 
@@ -90,7 +93,7 @@ public class Player {
 
         if(fUpdateTimer >= 200)
         {
-            frameToDraw();
+            this.frameToDraw();
 
             sourceRect.left = iColumnCounter * iPlayerWidth;
             sourceRect.right = sourceRect.left + iPlayerWidth;
@@ -105,6 +108,34 @@ public class Player {
 
         fPrevTime = fCurrTime;
 
+    }
+
+    //------------------------------------------------------------------------
+    // This will be used to check if the player gets hit.
+    public boolean playerHit(int projectileX, int projectileY)
+    {
+        if(projectileX > iPlayerPosX && projectileX < iPlayerPosX + iPlayerWidth)
+        {
+            if(projectileY > iPlayerPosY && projectileY < iPlayerPosY + iPlayerHeight)
+            {
+                Log.e(TAG, "(Player Hit) Hull Damage Detected");
+
+                iLives -= 1;
+
+                Log.e(TAG, "(Player Hit) Number of Lives : " + iLives);
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    //------------------------------------------------------------------------
+    // This will be used to check the the player's current number of lives.
+    public int getLives()
+    {
+        return iLives;
     }
 
     //------------------------------------------------------------------------
@@ -172,7 +203,7 @@ public class Player {
         {
             if(iPlayerPosX > iLeftBounds)
             {
-                iPlayerPosX = iPlayerPosX - iPlayerSpeed;
+                iPlayerPosX -= iPlayerSpeed;
             }
         }
 
@@ -180,7 +211,7 @@ public class Player {
         {
             if(iPlayerPosX + iPlayerWidth < iRightBounds)
             {
-                iPlayerPosX = iPlayerPosX + iPlayerSpeed;
+                iPlayerPosX += iPlayerSpeed;
             }
         }
 
