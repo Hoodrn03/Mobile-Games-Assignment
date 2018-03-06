@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.media.MediaPlayer;
 import android.os.Process;
 import android.support.constraint.ConstraintLayout;
 import android.text.Layout;
@@ -105,6 +106,11 @@ public class GameLoop extends SurfaceView implements Runnable{
 
         background.setBackground(this.getContext());
 
+        explosion = new MediaPlayer();
+
+        explosion = MediaPlayer.create(this.getContext(), R.raw.grenade_explosion);
+
+
     }
 
     //------------------------------------------------------------------------
@@ -136,6 +142,8 @@ public class GameLoop extends SurfaceView implements Runnable{
 
     private int iScoreCount = 0;
 
+    private MediaPlayer explosion;
+
     //------------------------------------------------------------------------
     // Classes :
     //------------------------------------------------------------------------
@@ -157,8 +165,6 @@ public class GameLoop extends SurfaceView implements Runnable{
 
     // This will hold all of the enemies and control all of their functions.
     private ArrayList<Enemies> a_ListOfEnemies;
-
-    private Pathfinder pathfinder;
 
     //------------------------------------------------------------------------
     // Member Functions :
@@ -446,6 +452,8 @@ public class GameLoop extends SurfaceView implements Runnable{
                     if(a_ListOfEnemies.get(i).enemyHit((playerProjectile.getProjectileX()), playerProjectile.getProjectileY()))
                     {
                         playerProjectile.setHasCollided(true);
+
+                        explosion.start();
                     }
                 }
 

@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.media.MediaPlayer;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -183,7 +184,10 @@ public class Enemies extends Pathfinder {
 
                 Log.e(TAG, "(Enemy Hit) Current Health : " + iHealth);
 
+                // Set Sound Effects.
+
                 return true;
+
             }
         }
 

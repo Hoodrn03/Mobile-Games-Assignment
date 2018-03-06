@@ -3,6 +3,7 @@ package com.example.ryan.mobilegamesassignmentgalaga.View;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Point;
+import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -26,6 +27,7 @@ public class MainGame extends AppCompatActivity {
     // This will hold the entire game.
     GameLoop gl;
 
+    MediaPlayer mediaPlayer;
 
     //------------------------------------------------------------------------
     // Functions :
@@ -61,7 +63,9 @@ public class MainGame extends AppCompatActivity {
 
         super.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
+        mediaPlayer = MediaPlayer.create(this, R.raw.tranquility);
 
+        mediaPlayer.start();
 
         gl = new GameLoop(this, screenSize);
 
@@ -76,6 +80,8 @@ public class MainGame extends AppCompatActivity {
     {
         super.onPause();
 
+        mediaPlayer.pause();
+
         gl.pause();
 
         setContentView(R.layout.pause_activity);
@@ -84,6 +90,8 @@ public class MainGame extends AppCompatActivity {
 
     public void resume(View view)
     {
+        mediaPlayer.start();
+
         setContentView(gl);
 
         onResume();
