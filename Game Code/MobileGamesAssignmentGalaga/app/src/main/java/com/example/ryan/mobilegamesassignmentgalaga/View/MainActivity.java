@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
+import com.example.ryan.mobilegamesassignmentgalaga.ControlsActivity;
 import com.example.ryan.mobilegamesassignmentgalaga.R;
 
 public class MainActivity extends AppCompatActivity {
@@ -16,21 +17,19 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    // This will be called when the High Score Button is pressed.
-
-    public void openHighScoreMenu(View view)
-    {
-        Intent intent = new Intent(this, HighScoreActivity.class);
-
-        startActivity(intent);
-    }
-
 
     // This will start the game.
 
     public void startGame(View view)
     {
         Intent intent = new Intent(this, MainGame.class);
+
+        startActivity(intent);
+    }
+
+    public void controls(View view)
+    {
+        Intent intent = new Intent(this, ControlsActivity.class);
 
         startActivity(intent);
     }

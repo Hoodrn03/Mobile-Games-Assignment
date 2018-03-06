@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.os.SystemClock;
 import android.util.Log;
@@ -28,7 +29,7 @@ public class Projectile {
 
     }
 
-    public Projectile(int newXPos, int newYPos, int direction)
+    public Projectile(int newXPos, int newYPos, int direction, Context context, int newLowerBounds, int rotation)
     {
 
         iProjectileXPos = newXPos;
@@ -36,6 +37,8 @@ public class Projectile {
         iProjectileYPos = newYPos;
 
         iProjectileSpeed = direction;
+
+        this.setProjectile(context, newLowerBounds, rotation);
 
     }
 
@@ -49,7 +52,9 @@ public class Projectile {
 
     private Bitmap projectile;
 
-    private Bitmap projectileToDraw;
+    private Bitmap scaledProjectile;
+
+    private Bitmap rotatedProjectile;
 
     private Bitmap explosion;
 
@@ -95,7 +100,7 @@ public class Projectile {
             {
                 bHasCollided = true;
 
-                Log.e(TAG, "(Update Projectiles) : Collided");
+                // Log.e(TAG, "(Update Projectiles) : Collided");
             }
         }
 
@@ -146,11 +151,17 @@ public class Projectile {
 
     //------------------------------------------------------------------------
     // This will be used to set both of the projectile's bitmaps, the missile and the explosion.
-    public void setProjectile(Context context, int newLowerBounds)
+    public void setProjectile(Context context, int newLowerBounds, int rotation)
     {
         // Screen bounds.
 
         iLowerBounds = newLowerBounds;
+
+        // Set Projectile rotation
+
+        Matrix rotationMatrix = new Matrix();
+
+        rotationMatrix.postRotate(rotation);
 
         // Set Bitmaps.
 
@@ -159,7 +170,9 @@ public class Projectile {
 
         projectile = BitmapFactory.decodeResource(res, R.drawable.missile);
 
-        projectileToDraw = Bitmap.createScaledBitmap(projectile, projectile.getWidth() / 4, projectile.getHeight() / 8, false);
+        scaledProjectile = Bitmap.createScaledBitmap(projectile, projectile.getWidth() / 4, projectile.getHeight() / 8, false);
+
+        rotatedProjectile = Bitmap.createBitmap(scaledProjectile, 0, 0, scaledProjectile.getWidth(), scaledProjectile.getHeight(), rotationMatrix, false);
 
         // Explosion :
         explosion = BitmapFactory.decodeResource(context.getResources(), R.drawable.explosion);
@@ -167,9 +180,9 @@ public class Projectile {
         // Prepare Separate Frames.
 
         // Projectile :
-        iProjectileHeight = projectileToDraw.getHeight();
+        iProjectileHeight = rotatedProjectile.getHeight();
 
-        iProjectileWidth = projectileToDraw.getWidth();
+        iProjectileWidth = rotatedProjectile.getWidth();
 
         projSourceRect = new Rect(0, 0, iProjectileWidth, iProjectileHeight);
 
@@ -210,9 +223,9 @@ public class Projectile {
     {
         if(!bHasCollided)
         {
-            if (projectileToDraw != null)
+            if (rotatedProjectile != null)
             {
-                canvas.drawBitmap(projectileToDraw, projSourceRect, destRect, null);
+                canvas.drawBitmap(rotatedProjectile, projSourceRect, destRect, null);
             }
             else
             {

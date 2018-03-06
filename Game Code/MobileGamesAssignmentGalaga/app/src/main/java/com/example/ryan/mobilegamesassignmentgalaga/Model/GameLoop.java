@@ -1,6 +1,8 @@
 package com.example.ryan.mobilegamesassignmentgalaga.Model;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -13,12 +15,17 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.ryan.mobilegamesassignmentgalaga.ControlsActivity;
+import com.example.ryan.mobilegamesassignmentgalaga.EndGame;
 import com.example.ryan.mobilegamesassignmentgalaga.R;
+import com.example.ryan.mobilegamesassignmentgalaga.View.MainGame;
 
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Vector;
 
 import static android.content.ContentValues.TAG;
@@ -55,6 +62,8 @@ public class GameLoop extends SurfaceView implements Runnable{
         playerProjectile = new Projectile();
 
         a_ListOfEnemies = new ArrayList<Enemies>();
+
+        // pathfinder = new Pathfinder(screenSize.x, screenSize.y - (screens.y / 2));
 
         // Prepare UI
 
@@ -148,6 +157,8 @@ public class GameLoop extends SurfaceView implements Runnable{
 
     // This will hold all of the enemies and control all of their functions.
     private ArrayList<Enemies> a_ListOfEnemies;
+
+    private Pathfinder pathfinder;
 
     //------------------------------------------------------------------------
     // Member Functions :
@@ -244,6 +255,8 @@ public class GameLoop extends SurfaceView implements Runnable{
 
         t = null;
 
+
+
         // Log.e(TAG, "(Pause) Game paused.");
     }
 
@@ -301,9 +314,7 @@ public class GameLoop extends SurfaceView implements Runnable{
 
         if(fireButton.checkZone(((int) fingerPosX), (int) (fingerPosY)) && !bHasShot)
         {
-            playerProjectile = new Projectile(player.getPlayerX(), player.getPlayerY(), -10);
-
-            playerProjectile.setProjectile(this.getContext(), screenSize.y);
+            playerProjectile = new Projectile(player.getPlayerX(), player.getPlayerY(), -10, this.getContext(), screenSize.y, 0);
 
             // Log.e(TAG, "(Update) Fire");
 
@@ -322,6 +333,11 @@ public class GameLoop extends SurfaceView implements Runnable{
 
             iScoreCount = 0;
         }
+    }
+
+    public int getScore()
+    {
+        return iScore;
     }
 
     //------------------------------------------------------------------------
@@ -352,8 +368,25 @@ public class GameLoop extends SurfaceView implements Runnable{
             }
         }
 
+        if(player.getLives() <= 0)
+        {
+            endGame(this);
+        }
 
     }
+
+    public void endGame(View view)
+    {
+        Intent intent;
+
+        intent = new Intent(this.getContext(), EndGame.class);
+
+        intent.putExtra("Score", this.getScore());
+
+        this.getContext().startActivity(intent);
+
+    }
+
 
     //------------------------------------------------------------------------
     // This will be used to hold all of the projectiles main functionality.
@@ -418,17 +451,45 @@ public class GameLoop extends SurfaceView implements Runnable{
 
                 if(a_ListOfEnemies.get(i).fireProjectile())
                 {
-                    Projectile projectile = new Projectile(a_ListOfEnemies.get(i).getEnemyXPos(), a_ListOfEnemies.get(i).getEnemyYPos(), 10);
-
-                    projectile.setProjectile(this.getContext(), screenSize.y);
-
-                    a_ListOfProjectiles.add(projectile);
+                    a_ListOfProjectiles.add(new Projectile(a_ListOfEnemies.get(i).getEnemyXPos(), a_ListOfEnemies.get(i).getEnemyYPos(), 10, this.getContext(), screenSize.y, 180));
 
                     a_ListOfProjectiles.trimToSize();
                 }
 
             }
         }
+
+        Random r = new Random();
+
+        if(a_ListOfEnemies.size() < 3)
+        {
+            if (r.nextInt(10) == 1)  // A 1 in 10 chance.
+            {
+                a_ListOfEnemies.add(new Enemies(this.getContext(), 0, screenSize.x, screenSize.x, screenSize.y - (screenSize.y / 2)));
+
+                Log.e(TAG, "(Update Enemies) Enemy Spawned; Max Spawn Rate. ");
+            }
+        }
+
+        else if(a_ListOfEnemies.size() < 10)
+        {
+            if (r.nextInt(200) == 1)  // A 1 in 200 chance.
+            {
+                a_ListOfEnemies.add(new Enemies(this.getContext(), 0, screenSize.x, screenSize.x, screenSize.y - (screenSize.y / 2)));
+
+                Log.e(TAG, "(Update Enemies) Enemy Spawned; Increased Spawn Rate. ");
+            }
+        }
+        else if (a_ListOfEnemies.size() < 30)
+        {
+            if (r.nextInt(400) == 1) // A 1 in 400 chance.
+            {
+                a_ListOfEnemies.add(new Enemies(this.getContext(), 0, screenSize.x, screenSize.x, screenSize.y - (screenSize.y / 2)));
+
+                Log.e(TAG, "(Update Enemies) Enemy Spawned.");
+            }
+        }
+
 
     }
 
@@ -490,6 +551,8 @@ public class GameLoop extends SurfaceView implements Runnable{
                 break;
             }
         }
+
+       //  pathfinder.drawPath(gameCanvas);
 
         // User Interface :
 

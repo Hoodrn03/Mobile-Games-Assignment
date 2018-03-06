@@ -21,7 +21,7 @@ import static android.content.ContentValues.TAG;
 
 // This will be the base enemy class and will be expanded upon to give the game some extra functionality.
 
-public class Enemies {
+public class Enemies extends Pathfinder {
 
     //------------------------------------------------------------------------
     // Constructor
@@ -35,11 +35,22 @@ public class Enemies {
 
         Random r = new Random();
 
-        iEnemyXPos = r.nextInt(screenSizeX);
+        if(r.nextBoolean())
+        {
+            iEnemyXPos = screenSizeX;
+        }
+
+        else
+        {
+            iEnemyXPos = 0 - iEnemyWidth;
+        }
+
 
         iEnemyYPos = r.nextInt(screenSizeY);
 
         iSpeed = r.nextInt(20) + 5;
+
+        generatePath(screenSizeX, screenSizeY);
 
     }
 
@@ -271,33 +282,45 @@ public class Enemies {
     public void moveEnemy()
     {
 
-        // Move Enemy.
-
-        if(bMoveLeft)
+        if(this.endOfPath())
         {
-            if(iEnemyXPos > iLeftBounds)
+            // Move Enemy (Left and Right).
+
+            if(bMoveLeft)
             {
-                iEnemyXPos -= iSpeed;
+                if(iEnemyXPos > iLeftBounds)
+                {
+                    iEnemyXPos -= iSpeed;
+                }
             }
+
+            else if(iEnemyXPos + iEnemyWidth < iRightBounds)
+            {
+                iEnemyXPos += iSpeed;
+            }
+
+            // Check Direction.
+
+            if(iEnemyXPos <= iLeftBounds)
+            {
+                bMoveLeft = false;
+            }
+            else if(iEnemyXPos + iEnemyWidth >= iRightBounds)
+            {
+                bMoveLeft = true;
+            }
+
+            // Log.e(TAG, "(Move Enemy) : " + iEnemyXPos);
+
         }
 
-        else if(iEnemyXPos + iEnemyWidth < iRightBounds)
+        else
         {
-            iEnemyXPos += iSpeed;
+            iEnemyXPos = this.moveAlongPathX(this.iEnemyXPos, this.iSpeed);
+
+            iEnemyYPos = this.moveAlongPathY(this.iEnemyYPos, this.iSpeed);
         }
 
-        // Check Direction.
-
-        if(iEnemyXPos <= iLeftBounds)
-        {
-            bMoveLeft = false;
-        }
-        else if(iEnemyXPos + iEnemyWidth >= iRightBounds)
-        {
-            bMoveLeft = true;
-        }
-
-        // Log.e(TAG, "(Move Enemy) : " + iEnemyXPos);
 
         destRect = new Rect(iEnemyXPos, iEnemyYPos, iEnemyXPos + iEnemyWidth, iEnemyYPos + iEnemyHeight);
     }
@@ -319,6 +342,8 @@ public class Enemies {
         if(enemyToDraw != null)
         {
             canvas.drawBitmap(enemyToDraw, sourceRect, destRect, null);
+
+            // drawPath(canvas);
         }
         else
         {

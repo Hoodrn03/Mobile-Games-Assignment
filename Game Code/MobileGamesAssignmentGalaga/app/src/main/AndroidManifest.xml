@@ -16,11 +16,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".View.HighScoreActivity" />
-        <activity android:name=".View.MainGame"></activity>
-
-
-
+        <activity android:name=".View.MainGame" />
+        <activity android:name=".ControlsActivity" />
+        <activity android:name=".EndGame" />
     </application>
 
 </manifest>

@@ -1,5 +1,6 @@
 package com.example.ryan.mobilegamesassignmentgalaga.View;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Point;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
+import com.example.ryan.mobilegamesassignmentgalaga.EndGame;
 import com.example.ryan.mobilegamesassignmentgalaga.Model.GameLoop;
 import com.example.ryan.mobilegamesassignmentgalaga.R;
 
@@ -70,18 +72,27 @@ public class MainGame extends AppCompatActivity {
     //------------------------------------------------------------------------
     // This will be called when the game is paused (exited while still open).
     @Override
-    protected void onPause()
+    public void onPause()
     {
         super.onPause();
 
         gl.pause();
 
+        setContentView(R.layout.pause_activity);
+
+    }
+
+    public void resume(View view)
+    {
+        setContentView(gl);
+
+        onResume();
     }
 
     //------------------------------------------------------------------------
     // This will be called when the activity is reopened (from a paused state).
     @Override
-    protected void onResume()
+    public void onResume()
     {
         super.onResume();
 

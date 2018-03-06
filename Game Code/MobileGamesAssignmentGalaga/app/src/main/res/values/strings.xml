@@ -3,6 +3,10 @@
 
     <string name="highScore">HighScores</string>
 
+    <string name="inputName">Name?</string>
+
     <string name="lives">Lives : </string>
+    <string name="title_activity_controls">Controls</string>
+    <string name="title_activity_controls_">Controls_Activity</string>
 
 </resources>

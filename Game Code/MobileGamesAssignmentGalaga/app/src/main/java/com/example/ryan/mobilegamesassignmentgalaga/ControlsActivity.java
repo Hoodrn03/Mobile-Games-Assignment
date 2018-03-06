@@ -1,0 +1,18 @@
+package com.example.ryan.mobilegamesassignmentgalaga;
+
+import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+
+import com.example.ryan.mobilegamesassignmentgalaga.View.MainGame;
+
+public class ControlsActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_controls);
+    }
+
+}
