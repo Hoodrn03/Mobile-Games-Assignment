@@ -381,6 +381,8 @@ public class GameLoop extends SurfaceView implements Runnable{
 
     }
 
+    //------------------------------------------------------------------------
+    // This will be used to end the game and load a new intent when the player runs out of lives.
     public void endGame(View view)
     {
         Intent intent;
